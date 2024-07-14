@@ -5,3 +5,8 @@ urlpatterns = [
   path('', views.list),
 ]
 
+urlpatterns = [
+   path('', views.list),
+   path('<int:id>/', views.post),
+]
+
