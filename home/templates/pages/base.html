@@ -24,9 +24,9 @@
       <div class="bs-sliderbar" style="background-color: #ffffff" ;>
         <ul class="nav flex-column">
           <li><a href="/">Thông tin cá nhân</a></li>
-          <li><a href="/blog">Bài viết</a></li>
-          <li><a href="/contact">Liên hệ</a></li>
-        </ul>
+          <li><a href="{% url 'blog' %}">Bài viết</a></li>
+          <li><a href="{% url 'contact' %}">Liên hệ</a></li>
+      </ul>
       </div>
       <br />
 
@@ -46,7 +46,7 @@
       </div>
 
       {% block content %} {% endblock %}
-      
+
       <footer>
         <div class="container-fluid">
           <a href="#">Facebook</a> | <a href="#">Twitter</a> |
