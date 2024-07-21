@@ -1,9 +1,21 @@
 {% extends "pages/base.html" %}
- 
-{% block title %}{{post.title}}{% endblock %}
- 
+
+{% block title %}{{ post.title }}{% endblock %}
+
 {% block content %}
-<h3><a href="blog/{{post.id}}">{{post.title}}</a></h3>
-<h6>on {{post.date}}</h6>
-{{post.body|safe|linebreaks}}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h3 class="card-title"><a href="{% url 'post' post.id %}">{{ post.title }}</a></h3>
+          <h6 class="card-subtitle text-muted">on {{ post.date }}</h6>
+          <div class="card-text">
+            {{ post.body|safe|linebreaks }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
