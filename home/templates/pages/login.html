@@ -1,0 +1,16 @@
+{% extends "pages/base.html" %}
+
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {% for key, value in form.errors.items %}
+        {{value}}
+    {% endfor %}
+    <p><label>Tài khoản:</label>{{form.username}}</p>
+    <p><label>Mật khẩu:</label>{{form.password}}</p>
+    <input type="hidden" name="next" value="/"/>
+    <input type="submit" value="Đăng nhập"/>
+</form>
+{% endblock %}
