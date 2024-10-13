@@ -30,3 +30,8 @@ class RegistrationForm(forms.Form):
             password=self.cleaned_data['password1']
         )
         return user
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput())
+    new_password = forms.CharField(widget=forms.PasswordInput())
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
