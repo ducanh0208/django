@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>{% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  {% load static %}
+  {% if request.path|slice:":6" != "/admin" %}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  {% endif %}
+
+  <style>
+    html, body {
+      height: 100%;
+      background-color: #f6f6f6;
+      font-family: 'Roboto', sans-serif;
+    }
+    .navbar {
+      background-color: #007bff;
+    }
+    .navbar .navbar-nav .nav-link {
+      color: white !important;
+    }
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 1rem;
+    }
+    .footer a {
+      color: white;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <header class="bg-light text-center py-3">
+    <h1>Blog Làm từ Python Django</h1>
+  </header>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container">
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="/">Thông tin cá nhân</a></li>
+          <li class="nav-item"><a class="nav-link" href="/blog">Bài viết</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact/">Liên hệ</a></li>
+          <li class="nav-item">
+            {% if user.username %}
+              <a href="{% url 'logout' %}" class="nav-link">Đăng xuất</a>
+            {% else %}
+              <a href="{% url 'register' %}" class="nav-link">Đăng ký</a> | <a href="{% url 'login' %}" class="nav-link">Đăng nhập</a>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+
+  <main class="flex-grow-1">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="footer text-center">
+    <p>
+      <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Google</a>
+    </p>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
