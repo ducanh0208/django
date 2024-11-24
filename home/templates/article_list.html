@@ -13,6 +13,8 @@
             </div>
             <div class="card-footer text-center text-muted">
                 <a href="#">Edit</a> | <a href="#">Delete</a>
+                <a href="{% url 'article_edit' aricle.pk %}">Edit</a> |
+                <a href="{% url 'aricle_delete' article.pk %}">Delete</a>
             </div>
         </div>
         <br/>
