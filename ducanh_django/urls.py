@@ -22,10 +22,10 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/',include('users.urls')),
+    # path('users/',include('users.urls')),
     path('users/',include('django.contrib.auth.urls')),
-    path('articles/',include('articles.urls')),
-    path('',include('pages.urls')),
+    path('articles/',include('article.urls')),
+    # path('',include('pages.urls')),
     path('', include('home.urls')),
     path('blog/', include('blog.urls')),
 ] 
