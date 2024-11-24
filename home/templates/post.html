@@ -8,6 +8,25 @@
     <div class="col-md-8 offset-md-2">
       <div class="card mb-3">
         <div class="card-body">
+          <div class="image">
+            <img src="{{post.image.url}}" width="500" height="300" />
+        </div>
+        
+        <style>
+          .image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+          }
+        
+          .image img {
+            max-width: 100%;
+            height: auto;
+          }
+        </style>
+        
+          <hr>
           <h3 class="card-title"><a href="{% url 'post' post.id %}">{{ post.title }}</a></h3>
           <h6 class="card-subtitle text-muted">on {{ post.date }}</h6>
           <div class="card-text">
@@ -18,15 +37,4 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% extends "pages/base.html" %}
- 
-{% block title %}Blog{% endblock %}
- 
-{% block content %}
-{% for post in Posts %}
-    <h4>{{post.date|date:"d-m-Y"}}<a href="{% url 'post' post.id %}">{{post.title}}</a></h4>
-    <img src="{{post.image.url}}" width="500px" height="300px" />
-{% endfor %}
 {% endblock %}
