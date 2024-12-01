@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bình luận</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="comment-box">
+        <h2>Bình luận</h2>
+
+        <!-- Form gửi bình luận -->
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Hiển thị form, mỗi trường form sẽ được bọc trong thẻ <p> -->
+            <button type="submit">Gửi</button>
+        </form>
+
+        <hr>
+
+        <h3>Các Bình luận:</h3>
+        {% for comment in comments %}
+            <div class="comment">
+                <strong>{{ comment.name|default:"Anonymous" }}</strong> ({{ comment.created_at }})
+                <p>{{ comment.text }}</p>
+            </div>
+        {% empty %}
+            <p>Chưa có bình luận nào.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

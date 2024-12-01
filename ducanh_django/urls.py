@@ -28,6 +28,8 @@ urlpatterns = [
     # path('',include('pages.urls')),
     path('', include('home.urls')),
     path('blog/', include('blog.urls')),
+    path('admin/', admin.site.urls),
+    path('comment/', include('comment.urls')),
 ] 
 
 if settings.DEBUG:
