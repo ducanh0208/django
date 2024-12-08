@@ -24,6 +24,45 @@
             max-width: 100%;
             height: auto;
           }
+          
+          /* Facebook-like comment box styling */
+          .comment-box {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+          }
+          
+          .comment-box textarea {
+            width: 100%;
+            border: 1px solid #ddd;
+            outline: none;
+            resize: none;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            font-size: 14px;
+            height: 100px;
+            margin-bottom: 10px;
+          }
+
+          .comment-box button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 20px;
+            cursor: pointer;
+            margin-left: auto;
+            width: 150px;
+          }
+
+          .comment-box button:hover {
+            background-color: #0056b3;
+          }
         </style>
         
           <hr>
@@ -32,6 +71,16 @@
           <div class="card-text">
             {{ post.body|safe|linebreaks }}
           </div>
+
+          <!-- Comment form (moved above the comment list) -->
+          <div class="comment-box">
+            <form method="POST" action="{% url 'post_detail' post.id %}">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button type="submit">Post Comment</button>
+            </form>
+          </div>
+
           <div class="card-text">
             <h5 class="mt-4">Comments</h5>
 
@@ -45,8 +94,7 @@
                                 </div>
                                 <div>
                                     <h6 class="mb-0">
-                                      <strong>{{ comment.name|default:"Anonymous" }}</strong>
-
+                                      <strong>{{ comment.author.username|default:"Anonymous" }}</strong>
                                     </h6>
                                     <small class="text-muted">Posted on {{ comment.created_at|date:"F j, Y, g:i a" }}</small>
                                 </div>
@@ -62,10 +110,13 @@
                     No comments yet. Be the first to comment!
                 </div>
             {% endif %}
-            
         </div>
       </div>
     </div>
   </div>
 </div>
 {% endblock %}
+
+
+
+
