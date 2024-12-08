@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 
 # Create your models here.
 class Comment(models.Model):
@@ -17,3 +18,5 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"Comment by {self.name or 'Anonymous'} on {self.created_at}"
+    
+admin.site.register(Comment)

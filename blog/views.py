@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Post
+from comment.models import Comment
 from django.http import Http404
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
@@ -26,7 +27,12 @@ def list(request):
 def post(request, id):
     try:
         post = Post.objects.get(id=id)
+        comments = Comment.objects.filter(post=post).order_by('-created_at')
     except Post.DoesNotExist:
         raise Http404("Bài viết không tồn tại")
 
-    return render(request, 'post.html', {'post': post})
+    return render(request, 'post.html', {
+        'post': post, 
+        'comments': comments
+        }
+    )

@@ -32,6 +32,37 @@
           <div class="card-text">
             {{ post.body|safe|linebreaks }}
           </div>
+          <div class="card-text">
+            <h5 class="mt-4">Comments</h5>
+
+            {% if comments %}
+                <div class="comments-list">
+                    {% for comment in comments %}
+                        <div class="comment-item p-3 mb-3 rounded border shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <div class="comment-avatar mr-3">
+                                    <img src="https://via.placeholder.com/50" alt="Avatar" class="rounded-circle">
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">
+                                      <strong>{{ comment.name|default:"Anonymous" }}</strong>
+
+                                    </h6>
+                                    <small class="text-muted">Posted on {{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+                                </div>
+                            </div>
+                            <div class="comment-text mt-3">
+                                <p>{{ comment.text }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info mt-4" role="alert">
+                    No comments yet. Be the first to comment!
+                </div>
+            {% endif %}
+            
         </div>
       </div>
     </div>
