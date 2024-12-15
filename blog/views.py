@@ -85,7 +85,7 @@ def edit_comment(request, comment_id):
     else:
         form = CommentForm(instance=comment)
     
-    return render(request, 'blog/edit_comment.html', {'form': form})
+    return redirect('post_detail', pk=comment.post.pk)
 
 # View to delete a comment
 @login_required
@@ -100,4 +100,4 @@ def delete_comment(request, comment_id):
         comment.delete()
         return redirect('post_detail', pk=comment.post.pk)
     
-    return render(request, 'blog/delete_comment.html', {'comment': comment})
+    return redirect('post_detail', pk=comment.post.pk)

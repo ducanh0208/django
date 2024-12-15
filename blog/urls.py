@@ -12,4 +12,6 @@ urlpatterns = [
    path('post/<int:pk>/', views.post_detail, name='post_detail'),  # View the post and its comments
    path('comment/edit/<int:comment_id>/', views.edit_comment, name='edit_comment'),  # Edit comment
    path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),  # Delete comment
+    path('comment/edit/<int:comment_id>/', views.edit_comment, name='edit_comment'),
+    path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 ]

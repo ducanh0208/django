@@ -72,7 +72,6 @@
             {{ post.body|safe|linebreaks }}
           </div>
 
-          <!-- Comment form (moved above the comment list) -->
           <div class="comment-box">
             <form method="POST" action="{% url 'post_detail' post.id %}">
               {% csrf_token %}
@@ -87,22 +86,45 @@
             {% if comments %}
                 <div class="comments-list">
                     {% for comment in comments %}
-                        <div class="comment-item p-3 mb-3 rounded border shadow-sm">
-                            <div class="d-flex align-items-center">
-                                <div class="comment-avatar mr-3">
-                                    <img src="https://via.placeholder.com/50" alt="Avatar" class="rounded-circle">
-                                </div>
-                                <div>
-                                    <h6 class="mb-0">
-                                      <strong>{{ comment.author.username|default:"Anonymous" }}</strong>
-                                    </h6>
-                                    <small class="text-muted">Posted on {{ comment.created_at|date:"F j, Y, g:i a" }}</small>
-                                </div>
-                            </div>
-                            <div class="comment-text mt-3">
-                                <p>{{ comment.text }}</p>
-                            </div>
-                        </div>
+                    <div class="comment-item p-3 mb-3 rounded border shadow-sm">
+                      <div class="d-flex align-items-center">
+                          <div class="comment-avatar mr-3">
+                              <img src="https://via.placeholder.com/50" alt="Avatar" class="rounded-circle">
+                          </div>
+                          <div>
+                              <h6 class="mb-0">
+                                  <strong>{{ comment.author.username|default:"Anonymous" }}</strong>
+                              </h6>
+                              <small class="text-muted">Posted on {{ comment.created_at|date:"F j, Y, g:i a" }}</small>
+                          </div>
+                      </div>
+                      <div class="comment-text mt-3">
+                          <p id="display-comment-text-{{ comment.id }}">{{ comment.text }}</p>
+                      </div>
+                  
+                      {% if user == comment.author %}
+                      <div class="comment-actions mt-2">
+                        <!-- Edit: Using POST with a form -->
+                        <div class="comment-actions mt-2">
+                          <div id="comment-text-{{ comment.id }}">
+                              <button class="btn btn-sm btn-warning" onclick="showEditForm({{ comment.id }})">Edit</button>
+                              <form action="{% url 'delete_comment' comment.id %}" method="POST" style="display:inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                              </form>
+                          </div>
+                      
+                          <!-- Hidden edit form -->
+                          <form id="edit-comment-form-{{ comment.id }}" action="{% url 'edit_comment' comment.id %}" method="POST" style="display:none;">
+                              {% csrf_token %}
+                              <textarea name="text" class="form-control" rows="2">{{ comment.text }}</textarea>
+                              <button type="submit" class="btn btn-sm btn-success mt-1">Save</button>
+                              <button type="button" class="btn btn-sm btn-secondary mt-1" onclick="hideEditForm({{ comment.id }})">Cancel</button>
+                          </form>
+                      </div>
+                    </div>
+                      {% endif %}
+                  </div>
                     {% endfor %}
                 </div>
             {% else %}
@@ -115,8 +137,20 @@
     </div>
   </div>
 </div>
+
+<script>
+  function showEditForm(commentId) {
+      // Hide the comment text and show the edit form
+      document.getElementById(`comment-text-${commentId}`).style.display = 'none';
+      document.getElementById(`display-comment-text-${commentId}`).style.display = 'none';
+
+      document.getElementById(`edit-comment-form-${commentId}`).style.display = 'block';
+  }
+
+  function hideEditForm(commentId) {
+    document.getElementById(`display-comment-text-${commentId}`).style.display = 'block';
+    document.getElementById(`comment-text-${commentId}`).style.display = 'block';
+      document.getElementById(`edit-comment-form-${commentId}`).style.display = 'none';
+  }
+</script>
 {% endblock %}
-
-
-
-
