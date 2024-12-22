@@ -15,6 +15,7 @@ class Comment(models.Model):
         'blog.Post',
         on_delete=models.CASCADE,
     )
+    file = models.FileField(upload_to='attachments/', null=True, blank=True)
     
     def __str__(self):
         return f"Comment by {self.name or 'Anonymous'} on {self.created_at}"

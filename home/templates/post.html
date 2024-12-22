@@ -9,62 +9,65 @@
       <div class="card mb-3">
         <div class="card-body">
           <div class="image">
-            <img src="{{post.image.url}}" width="500" height="300" />
-        </div>
-        
-        <style>
-          .image {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 300px;
-          }
-        
-          .image img {
-            max-width: 100%;
-            height: auto;
-          }
-          
-          /* Facebook-like comment box styling */
-          .comment-box {
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            margin-bottom: 20px;
-          }
-          
-          .comment-box textarea {
-            width: 100%;
-            border: 1px solid #ddd;
-            outline: none;
-            resize: none;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #f1f1f1;
-            font-size: 14px;
-            height: 100px;
-            margin-bottom: 10px;
-          }
+            <img src="{{ post.image.url }}" width="500" height="300" />
+          </div>
 
-          .comment-box button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 20px;
-            cursor: pointer;
-            margin-left: auto;
-            width: 150px;
-          }
+          <style>
+            .image {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 300px;
+            }
 
-          .comment-box button:hover {
-            background-color: #0056b3;
-          }
-        </style>
-        
+            .image img {
+              max-width: 100%;
+              height: auto;
+            }
+
+            .comment-box {
+              display: flex;
+              flex-direction: column;
+              padding: 10px;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              background-color: #f9f9f9;
+              margin-bottom: 20px;
+            }
+
+            .comment-box textarea {
+              width: 100%;
+              border: 1px solid #ddd;
+              outline: none;
+              resize: none;
+              padding: 10px;
+              border-radius: 5px;
+              background-color: #f1f1f1;
+              font-size: 14px;
+              height: 100px;
+              margin-bottom: 10px;
+            }
+
+            .comment-box input[type="file"] {
+              margin-bottom: 10px;
+            }
+
+            .comment-box button {
+              background-color: #007bff;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              padding: 8px 20px;
+              cursor: pointer;
+              margin-left: auto;
+              width: 150px;
+            }
+
+            .comment-box button:hover {
+              background-color: #0056b3;
+            }
+          </style>
+
           <hr>
           <h3 class="card-title"><a href="{% url 'post' post.id %}">{{ post.title }}</a></h3>
           <h6 class="card-subtitle text-muted">on {{ post.date }}</h6>
@@ -73,13 +76,19 @@
           </div>
 
           <div class="comment-box">
-            <form method="POST" action="{% url 'post_detail' post.id %}">
+            <form method="POST" action="{% url 'post_detail' post.id %}" enctype="multipart/form-data">
               {% csrf_token %}
               {{ form.as_p }}
               <button type="submit">Post Comment</button>
             </form>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
+          
           <div class="card-text">
             <h5 class="mt-4">Comments</h5>
 
