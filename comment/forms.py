@@ -28,5 +28,5 @@ class CommentForm(forms.ModelForm):
     file = forms.FileField(
         required=False,
         validators=[validate_file_type],
-        widget=forms.ClearableFileInput(attrs={'multiple': True})
+        widget=forms.ClearableFileInput()
     )
