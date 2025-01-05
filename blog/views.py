@@ -31,7 +31,7 @@ def post(request, id):
         post = Post.objects.get(id=id)
         comments = Comment.objects.filter(post=post).order_by('-created_at')
         if request.method == 'POST':
-            form = CommentForm(request.POST)
+            form = CommentForm(request.POST, request.FILES)  # Add request.FILES here
             if form.is_valid():
                 new_comment = form.save(commit=False)
                 new_comment.post = post

@@ -109,6 +109,15 @@
                       </div>
                       <div class="comment-text mt-3">
                           <p id="display-comment-text-{{ comment.id }}">{{ comment.text }}</p>
+                          {% if comment.file %}
+            <div class="comment-attachment mt-3">
+                <p><strong>Attachment:</strong></p>
+                
+                    <img src="{{ comment.file.url }}" alt="Image preview" style="max-width: 100%; max-height: 300px; object-fit: contain;">
+                
+              
+            </div>
+                {% endif %}
                       </div>
                   
                       {% if user == comment.author %}
