@@ -1,0 +1,15 @@
+{% extends "pages/base.html" %}
+
+{% block title %}excel{% endblock %}
+
+{% block content %}
+<h1>Nhập tệp Excel</h1>
+{% if error %}
+<p style="color: red;">Lỗi: {{ error }}</p>
+{% endif %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Tải lên</button>
+</form>
+{% endblock %}

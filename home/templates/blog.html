@@ -1,8 +1,5 @@
-{% extends "pages/base.html" %}
-
-{% block title %} Danh sách bài viết {% endblock %}
-
-{% block content %}
+{% extends "pages/base.html" %} {% block title %} Danh sách bài viết {% endblock
+%} {% block content %}
 <div class="container">
   <div class="row">
     <div class="col-md-8 offset-md-2">
@@ -10,7 +7,11 @@
       <div class="card mb-3">
         <div class="card-body">
           <h4 class="card-title">{{ post.date|date:"d-m-Y" }}</h4>
-          <h5 class="card-subtitle mb-2"><a href="{% url 'post' post.id %}" class="card-link">{{ post.title }}</a></h5>
+          <h5 class="card-subtitle mb-2">
+            <a href="{% url 'post' post.id %}" class="card-link"
+              >{{ post.title }}</a
+            >
+          </h5>
           <p class="card-text">{{ post.content }}</p>
         </div>
       </div>
@@ -18,8 +19,6 @@
     </div>
   </div>
 </div>
-  
-<h3><a href="blog/{{post.id}}">{{post.title}}</a></h3>
-{{post.body|safe|linebreaks}}
-{% endblock %}
 
+<h3><a href="blog/{{post.id}}">{{post.title}}</a></h3>
+{{post.body|safe|linebreaks}} {% endblock %}
