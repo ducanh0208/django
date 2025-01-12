@@ -5,9 +5,10 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 import pandas as pd
-from .models import Post
+from blog.models import Post
 from .form import UploadFileForm
 import csv
+from datetime import datetime
 
 # Create your views here.
 def index(request):
@@ -26,13 +27,22 @@ def excel_view(request):
 
                 # Lặp qua từng hàng để lưu dữ liệu vào database
                 for _, row in df.iterrows():
-                    Post.objects.create(  # Hoặc Product nếu bạn muốn sử dụng Product
+                    date_value = row['date']
+                    if isinstance(date_value, str):
+                        date_value = datetime.strptime(date_value, '%Y-%m-%d')  # Adjust the format as necessary
+
+                    image_value = row.get('image', '')
+                    if isinstance(image_value, float):
+                        image_value = str(image_value)  # Convert to string if it's a float
+
+                    post = Post.objects.create(
                         title=row['title'],
                         body=row['body'],
-                        date=row['date'],
-                        image=row.get('image', '')
+                        date=date_value,
+                        author=request.user
                     )
-                return redirect('success')  # Sau khi thành công, bạn có thể chuyển hướng tới trang khác
+                    print(f"success import {post}")
+                return render(request, 'pages/excel.html', {'form': form})
             
             except Exception as e:
                 return render(request, 'pages/excel.html', {'form': form, 'error': str(e)})

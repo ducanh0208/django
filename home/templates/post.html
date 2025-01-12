@@ -8,9 +8,11 @@
     <div class="col-md-8 offset-md-2">
       <div class="card mb-3">
         <div class="card-body">
-          <div class="image">
-            <img src="{{ post.image.url }}" width="500" height="300" />
-          </div>
+          {% if post.image %}
+            <div class="image">
+              <img src="{{ post.image.url }}" width="500" height="300" />
+            </div>
+          {% endif %}
 
           <style>
             .image {
