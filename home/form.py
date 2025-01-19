@@ -37,3 +37,4 @@ class ChangePasswordForm(forms.Form):
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+    image = forms.ImageField(required=False)

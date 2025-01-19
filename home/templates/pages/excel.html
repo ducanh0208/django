@@ -1,15 +1,141 @@
 {% extends "pages/base.html" %}
 
-{% block title %}excel{% endblock %}
+{% block title %}
+Nhập tệp Excel
+{% endblock %}
 
 {% block content %}
 <h1>Nhập tệp Excel</h1>
+
 {% if error %}
-<p style="color: red;">Lỗi: {{ error }}</p>
+<p style="color: red">Lỗi: {{ error }}</p>
 {% endif %}
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Tải lên</button>
+
+<form method="post" enctype="multipart/form-data" id="import-form">
+  {% csrf_token %}
+
+  <!-- Excel File Input -->
+  <input
+    type="file"
+    id="excel-file"
+    name="file"
+    accept=".xlsx, .xls"
+    style="display: none"
+  />
+  <button type="button" class="btn btn-primary" id="file-chooser-button">
+    Chọn Tệp Excel
+  </button>
+
+  <!-- Removed the image chooser button -->
+  <!-- <input type="file" id="image-file" name="image" accept="image/*" style="display: none" /> -->
+  <!-- <button type="button" class="btn btn-secondary" id="image-chooser-button">Chọn Hình Ảnh</button> -->
+
+  <!-- Preview Button -->
+  <button
+    type="button"
+    class="btn btn-info"
+    id="preview-button"
+    style="display: none"
+  >
+    Xem trước
+  </button>
+
+  <!-- Preview Container -->
+  <div id="preview-container" style="display: none; margin-top: 20px">
+    <h4>Preview Dữ liệu</h4>
+    <table class="table" id="preview-table">
+      <thead>
+        <tr>
+          <th>Tiêu đề</th>
+          <th>Nội dung</th>
+          <th>Ngày</th>
+          <th>Hình ảnh</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      class="btn btn-success"
+      id="submit-button"
+      style="display: none"
+    >
+      Tải lên và Nhập
+    </button>
+  </div>
 </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+<script>
+    document.getElementById('file-chooser-button').addEventListener('click', function() {
+        document.getElementById('excel-file').click();
+    });
+
+    
+
+    document.getElementById('excel-file').addEventListener('change', function () {
+        if (this.files.length > 0) {
+            document.getElementById('preview-button').style.display = 'inline-block'; // Show preview button
+        }
+    });
+
+    document.getElementById('preview-button').addEventListener('click', function () {
+        var fileInput = document.getElementById('excel-file');
+        var previewContainer = document.getElementById('preview-container');
+        var previewTableBody = document.getElementById('preview-table').getElementsByTagName('tbody')[0];
+    
+        if (fileInput.files.length === 0) {
+            alert("Vui lòng chọn tệp Excel.");
+            return;
+        }
+    
+        var file = fileInput.files[0];
+    
+        var reader = new FileReader();
+    
+        reader.onload = function (e) {
+            var data = e.target.result;
+    
+            var workbook = XLSX.read(data, { type: 'binary' });
+            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+            var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    
+            previewTableBody.innerHTML = ''; // Clear previous preview
+    
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                var title = row[0] || '';   // Title column
+                var body = row[1] || '';    // Body column
+                var date = row[2] || '';    // Date column
+                var image = row[3] || '';   // Image column (URL or path)
+    
+                // Create the table row for preview
+                var tr = document.createElement('tr');
+                tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${date}</td><td></td>`;  // Add an empty td for image
+    
+                // If image URL/path is present, create an img tag for preview
+                if (image) {
+                    var img = document.createElement('img');
+                    img.src = image;
+                    img.style.maxWidth = '100px'; // Adjust the size of the preview image
+                    img.style.maxHeight = '100px';
+                    tr.cells[3].appendChild(img);  // Append image to the 4th cell (index 3)
+                } else {
+                    tr.cells[3].innerHTML = 'No Image'; // If no image, show 'No Image'
+                }
+    
+                previewTableBody.appendChild(tr);  // Append the row to the table body
+            }
+    
+            previewContainer.style.display = 'block';  // Show the preview container
+            document.getElementById('submit-button').style.display = 'inline-block';  // Show the submit button
+        };
+    
+        reader.readAsBinaryString(file);
+    });
+</script>
+
 {% endblock %}
