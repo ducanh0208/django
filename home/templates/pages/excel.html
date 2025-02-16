@@ -26,11 +26,6 @@ Nhập tệp Excel
     Chọn Tệp Excel
   </button>
 
-  <!-- Removed the image chooser button -->
-  <!-- <input type="file" id="image-file" name="image" accept="image/*" style="display: none" /> -->
-  <!-- <button type="button" class="btn btn-secondary" id="image-chooser-button">Chọn Hình Ảnh</button> -->
-
-  <!-- Preview Button -->
   <button
     type="button"
     class="btn btn-info"
@@ -40,7 +35,6 @@ Nhập tệp Excel
     Xem trước
   </button>
 
-  <!-- Preview Container -->
   <div id="preview-container" style="display: none; margin-top: 20px">
     <h4>Preview Dữ liệu</h4>
     <table class="table" id="preview-table">
@@ -107,27 +101,42 @@ Nhập tệp Excel
     
             for (var i = 1; i < rows.length; i++) {
                 var row = rows[i];
-                var title = row[0] || '';   // Title column
-                var body = row[1] || '';    // Body column
-                var date = row[2] || '';    // Date column
-                var image = row[3] || '';   // Image column (URL or path)
-    
-                // Create the table row for preview
+                var title = row[0] || '';  
+                var body = row[1] || '';    
+                var date = row[2] || '';   
+                var image = row[3] || ''; 
+                
+                if (date && typeof date === 'number' && !isNaN(date)) {
+                  var formattedDate = new Date((date - (25567 + 2)) * 86400 * 1000); // Convert Excel serial date to JavaScript date
+                  if (!isNaN(formattedDate.getTime())) {
+                      formattedDate = formattedDate.toLocaleDateString(); // Format date as per local settings
+                  } else {
+                      formattedDate = 'Invalid Date'; // If the date is invalid, show raw data and mark cell as red
+                  }
+                } else if (date && typeof date === 'string' && !isNaN(Date.parse(date))) {
+                    var formattedDate = new Date(date);
+                    formattedDate = formattedDate.toLocaleDateString(); // Format string date as per local settings
+                } else {
+                    formattedDate = date || 'No Date'; // Return raw date value if it's invalid and mark the cell as red
+                }
                 var tr = document.createElement('tr');
-                tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${date}</td><td></td>`;  // Add an empty td for image
-    
-                // If image URL/path is present, create an img tag for preview
+                tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${formattedDate}</td><td></td>`;  
+                if (formattedDate === 'Invalid Date' || formattedDate === 'No Date' || !Date.parse(formattedDate)) {
+                    tr.cells[2].style.color = 'red'; // Highlight the date cell with red background
+                }
+                
                 if (image) {
                     var img = document.createElement('img');
                     img.src = image;
-                    img.style.maxWidth = '100px'; // Adjust the size of the preview image
+                    img.style.maxWidth = '100px'; 
                     img.style.maxHeight = '100px';
-                    tr.cells[3].appendChild(img);  // Append image to the 4th cell (index 3)
+                    tr.cells[3].appendChild(img); 
                 } else {
-                    tr.cells[3].innerHTML = 'No Image'; // If no image, show 'No Image'
-                }
+                    tr.cells[3].innerHTML = 'No Image';
+                    tr.cells[3].style.color = 'red';
+                  }
     
-                previewTableBody.appendChild(tr);  // Append the row to the table body
+                previewTableBody.appendChild(tr);
             }
     
             previewContainer.style.display = 'block';  // Show the preview container
