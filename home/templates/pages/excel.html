@@ -14,26 +14,10 @@ Nhập tệp Excel
 <form method="post" enctype="multipart/form-data" id="import-form">
   {% csrf_token %}
 
-  <!-- Excel File Input -->
-  <input
-    type="file"
-    id="excel-file"
-    name="file"
-    accept=".xlsx, .xls"
-    style="display: none"
-  />
-  <button type="button" class="btn btn-primary" id="file-chooser-button">
-    Chọn Tệp Excel
-  </button>
+  <input type="file" id="excel-file" name="file" accept=".xlsx, .xls" style="display: none" />
+  <button type="button" class="btn btn-primary" id="file-chooser-button">Chọn Tệp Excel</button>
 
-  <button
-    type="button"
-    class="btn btn-info"
-    id="preview-button"
-    style="display: none"
-  >
-    Xem trước
-  </button>
+  <button type="button" class="btn btn-info" id="preview-button" style="display: none">Xem trước</button>
 
   <div id="preview-container" style="display: none; margin-top: 20px">
     <h4>Preview Dữ liệu</h4>
@@ -48,103 +32,140 @@ Nhập tệp Excel
       </thead>
       <tbody></tbody>
     </table>
-
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      class="btn btn-success"
-      id="submit-button"
-      style="display: none"
-    >
-      Tải lên và Nhập
-    </button>
+    <button type="submit" class="btn btn-success" id="submit-button" style="display: none">Tải lên và Nhập</button>
   </div>
 </form>
 
+<style>
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  .error-text {
+    color: red;
+    font-weight: bold;
+  }
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-
 <script>
-    document.getElementById('file-chooser-button').addEventListener('click', function() {
-        document.getElementById('excel-file').click();
-    });
+  document.getElementById('file-chooser-button').addEventListener('click', function() {
+      document.getElementById('excel-file').click();
+  });
 
-    
+  document.getElementById('excel-file').addEventListener('change', function () {
+      if (this.files.length > 0) {
+          document.getElementById('preview-button').style.display = 'inline-block';
+      }
+  });
 
-    document.getElementById('excel-file').addEventListener('change', function () {
-        if (this.files.length > 0) {
-            document.getElementById('preview-button').style.display = 'inline-block'; // Show preview button
-        }
-    });
+  document.getElementById('preview-button').addEventListener('click', function () {
+      var fileInput = document.getElementById('excel-file');
+      var previewContainer = document.getElementById('preview-container');
+      var previewTableBody = document.getElementById('preview-table').getElementsByTagName('tbody')[0];
 
-    document.getElementById('preview-button').addEventListener('click', function () {
-        var fileInput = document.getElementById('excel-file');
-        var previewContainer = document.getElementById('preview-container');
-        var previewTableBody = document.getElementById('preview-table').getElementsByTagName('tbody')[0];
-    
-        if (fileInput.files.length === 0) {
-            alert("Vui lòng chọn tệp Excel.");
-            return;
-        }
-    
-        var file = fileInput.files[0];
-    
-        var reader = new FileReader();
-    
-        reader.onload = function (e) {
-            var data = e.target.result;
-    
-            var workbook = XLSX.read(data, { type: 'binary' });
-            var sheet = workbook.Sheets[workbook.SheetNames[0]];
-            var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-    
-            previewTableBody.innerHTML = ''; // Clear previous preview
-    
-            for (var i = 1; i < rows.length; i++) {
-                var row = rows[i];
-                var title = row[0] || '';  
-                var body = row[1] || '';    
-                var date = row[2] || '';   
-                var image = row[3] || ''; 
-                
-                if (date && typeof date === 'number' && !isNaN(date)) {
-                  var formattedDate = new Date((date - (25567 + 2)) * 86400 * 1000); // Convert Excel serial date to JavaScript date
-                  if (!isNaN(formattedDate.getTime())) {
-                      formattedDate = formattedDate.toLocaleDateString(); // Format date as per local settings
+      if (fileInput.files.length === 0) {
+          alert("Vui lòng chọn tệp Excel.");
+          return;
+      }
+
+      var file = fileInput.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+          var data = e.target.result;
+          var workbook = XLSX.read(data, { type: 'binary' });
+          var sheet = workbook.Sheets[workbook.SheetNames[0]];
+          var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          previewTableBody.innerHTML = '';
+
+          for (var i = 1; i < rows.length; i++) {
+              var row = rows[i];
+              var title = row[0] || '';  
+              var body = row[1] || '';    
+              var date = row[2] || '';   
+              var image = row[3] || ''; 
+              
+              let formattedDate = date;
+              let dateError = '';
+
+              if (date && typeof date === 'number' && !isNaN(date)) {
+                  var tempDate = new Date((date - (25567 + 2)) * 86400 * 1000);
+                  if (!isNaN(tempDate.getTime())) {
+                      formattedDate = tempDate.toLocaleDateString();
                   } else {
-                      formattedDate = 'Invalid Date'; // If the date is invalid, show raw data and mark cell as red
+                      formattedDate = 'Invalid Date';
+                      dateError = 'Lỗi: Dữ liệu ngày không hợp lệ.';
                   }
-                } else if (date && typeof date === 'string' && !isNaN(Date.parse(date))) {
-                    var formattedDate = new Date(date);
-                    formattedDate = formattedDate.toLocaleDateString(); // Format string date as per local settings
-                } else {
-                    formattedDate = date || 'No Date'; // Return raw date value if it's invalid and mark the cell as red
-                }
-                var tr = document.createElement('tr');
-                tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${formattedDate}</td><td></td>`;  
-                if (formattedDate === 'Invalid Date' || formattedDate === 'No Date' || !Date.parse(formattedDate)) {
-                    tr.cells[2].style.color = 'red'; // Highlight the date cell with red background
-                }
-                
-                if (image) {
-                    var img = document.createElement('img');
-                    img.src = image;
-                    img.style.maxWidth = '100px'; 
-                    img.style.maxHeight = '100px';
-                    tr.cells[3].appendChild(img); 
-                } else {
-                    tr.cells[3].innerHTML = 'No Image';
-                    tr.cells[3].style.color = 'red';
-                  }
-    
-                previewTableBody.appendChild(tr);
-            }
-    
-            previewContainer.style.display = 'block';  // Show the preview container
-            document.getElementById('submit-button').style.display = 'inline-block';  // Show the submit button
-        };
-    
-        reader.readAsBinaryString(file);
-    });
-</script>
+              } else if (date && typeof date === 'string' && !isNaN(Date.parse(date))) {
+                  var tempDate = new Date(date);
+                  formattedDate = tempDate.toLocaleDateString();
+              } else {
+                  formattedDate = 'No Date';
+                  dateError = 'Lỗi: Ngày bị thiếu hoặc không hợp lệ.';
+              }
+			  console.log("Raw date:", date, "Formatted date:", formattedDate);
 
+              var tr = document.createElement('tr');
+			  var dateCell = document.createElement('td');
+			  dateCell.textContent = formattedDate; // Giữ nguyên nội dung ngày tháng
+			  
+			  if (dateError) {
+				  var tooltipSpan = document.createElement('span');
+				  tooltipSpan.classList.add('tooltiptext');
+				  tooltipSpan.textContent = dateError;
+			  
+				  var tooltipContainer = document.createElement('div');
+				  tooltipContainer.classList.add('tooltip', 'error-text');
+				  tooltipContainer.appendChild(document.createTextNode(formattedDate));
+				  tooltipContainer.appendChild(tooltipSpan);
+			  
+				  dateCell.innerHTML = ''; // Xóa nội dung cũ
+				  dateCell.appendChild(tooltipContainer);
+			  }
+			  
+			  tr.appendChild(dateCell);
+			  
+              tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${formattedDate}</td><td></td>`;
+
+
+              if (image) {
+                  var img = document.createElement('img');
+                  img.src = image;
+                  img.style.maxWidth = '100px';
+                  img.style.maxHeight = '100px';
+                  tr.cells[3].appendChild(img);
+              } else {
+                  tr.cells[3].innerHTML = 'No Image';
+                  tr.cells[3].style.color = 'red';
+              }
+
+              previewTableBody.appendChild(tr);
+          }
+
+          previewContainer.style.display = 'block';
+          document.getElementById('submit-button').style.display = 'inline-block';
+      };
+
+      reader.readAsBinaryString(file);
+  });
+</script>
 {% endblock %}
