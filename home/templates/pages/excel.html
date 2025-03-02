@@ -25,14 +25,7 @@ Nhập tệp Excel
     Chọn Tệp Excel
   </button>
 
-  <button
-    type="button"
-    class="btn btn-info"
-    id="preview-button"
-    style="display: none"
-  >
-    Xem trước
-  </button>
+  <button type="button" class="btn btn-info" id="preview-button" style="display: none">Xem trước</button>
 
   <div id="preview-container" style="display: none; margin-top: 20px">
     <h4>Preview Dữ liệu</h4>
@@ -59,8 +52,35 @@ Nhập tệp Excel
   </div>
 </form>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<style>
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+  }
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+  .error-text {
+    color: red;
+    font-weight: bold;
+  }
+</style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script>
     document.getElementById('file-chooser-button').addEventListener('click', function() {
         document.getElementById('excel-file').click();
@@ -210,5 +230,4 @@ Nhập tệp Excel
         reader.readAsBinaryString(file);
     });
 </script>
-
 {% endblock %}
