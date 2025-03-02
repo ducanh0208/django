@@ -14,7 +14,6 @@ Nhập tệp Excel
 <form method="post" enctype="multipart/form-data" id="import-form">
   {% csrf_token %}
 
-  <!-- Excel File Input -->
   <input
     type="file"
     id="excel-file"
@@ -49,7 +48,6 @@ Nhập tệp Excel
       <tbody></tbody>
     </table>
 
-    <!-- Submit Button -->
     <button
       type="submit"
       class="btn btn-success"
@@ -68,81 +66,147 @@ Nhập tệp Excel
         document.getElementById('excel-file').click();
     });
 
-    
-
     document.getElementById('excel-file').addEventListener('change', function () {
         if (this.files.length > 0) {
-            document.getElementById('preview-button').style.display = 'inline-block'; // Show preview button
+            document.getElementById('preview-button').style.display = 'inline-block';
         }
     });
+
+    // Tạo tooltip toàn cục để sử dụng cho cả ngày và ảnh
+    var tooltip = document.createElement("div");
+    tooltip.style.position = "absolute";
+    tooltip.style.backgroundColor = "#333";
+    tooltip.style.color = "#fff";
+    tooltip.style.padding = "5px";
+    tooltip.style.borderRadius = "5px";
+    tooltip.style.fontSize = "12px";
+    tooltip.style.visibility = "hidden";
+    tooltip.style.whiteSpace = "nowrap";
+    tooltip.style.zIndex = "1000";
+    document.body.appendChild(tooltip);
+
+    function showTooltip(event, text) {
+        tooltip.textContent = text;
+        tooltip.style.top = (event.clientY + 10) + "px";
+        tooltip.style.left = (event.clientX + 10) + "px";
+        tooltip.style.visibility = "visible";
+    }
+
+    function hideTooltip() {
+        tooltip.style.visibility = "hidden";
+    }
 
     document.getElementById('preview-button').addEventListener('click', function () {
         var fileInput = document.getElementById('excel-file');
         var previewContainer = document.getElementById('preview-container');
         var previewTableBody = document.getElementById('preview-table').getElementsByTagName('tbody')[0];
-    
+
         if (fileInput.files.length === 0) {
             alert("Vui lòng chọn tệp Excel.");
             return;
         }
-    
+
         var file = fileInput.files[0];
-    
         var reader = new FileReader();
-    
+
         reader.onload = function (e) {
             var data = e.target.result;
-    
             var workbook = XLSX.read(data, { type: 'binary' });
             var sheet = workbook.Sheets[workbook.SheetNames[0]];
             var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-    
-            previewTableBody.innerHTML = ''; // Clear previous preview
-    
+
+            previewTableBody.innerHTML = '';
+
             for (var i = 1; i < rows.length; i++) {
                 var row = rows[i];
                 var title = row[0] || '';  
                 var body = row[1] || '';    
                 var date = row[2] || '';   
                 var image = row[3] || ''; 
-                
+
+                var formattedDate = date;
+                var dateTooltip = "";
+
+                // Xử lý ngày tháng
                 if (date && typeof date === 'number' && !isNaN(date)) {
-                  var formattedDate = new Date((date - (25567 + 2)) * 86400 * 1000); // Convert Excel serial date to JavaScript date
-                  if (!isNaN(formattedDate.getTime())) {
-                      formattedDate = formattedDate.toLocaleDateString(); // Format date as per local settings
-                  } else {
-                      formattedDate = 'Invalid Date'; // If the date is invalid, show raw data and mark cell as red
-                  }
+                    var convertedDate = new Date((date - (25567 + 2)) * 86400 * 1000);
+                    if (!isNaN(convertedDate.getTime())) {
+                        formattedDate = convertedDate.toLocaleDateString();
+                    } else {
+                        formattedDate = 'Invalid Date';
+                        dateTooltip = "Ngày không hợp lệ: Sai định dạng hoặc giá trị không đúng";
+                    }
                 } else if (date && typeof date === 'string' && !isNaN(Date.parse(date))) {
-                    var formattedDate = new Date(date);
-                    formattedDate = formattedDate.toLocaleDateString(); // Format string date as per local settings
+                    formattedDate = new Date(date).toLocaleDateString();
                 } else {
-                    formattedDate = date || 'No Date'; // Return raw date value if it's invalid and mark the cell as red
+                    formattedDate = 'No Date';
+                    dateTooltip = "Không có dữ liệu ngày hoặc sai định dạng";
                 }
+
                 var tr = document.createElement('tr');
-                tr.innerHTML = `<td>${title}</td><td>${body}</td><td>${formattedDate}</td><td></td>`;  
-                if (formattedDate === 'Invalid Date' || formattedDate === 'No Date' || !Date.parse(formattedDate)) {
-                    tr.cells[2].style.color = 'red'; // Highlight the date cell with red background
+
+                // Tạo các ô cho tiêu đề và nội dung
+                var titleCell = document.createElement('td');
+                titleCell.textContent = title;
+                var bodyCell = document.createElement('td');
+                bodyCell.textContent = body;
+
+                // Ô ngày với tooltip
+                var dateCell = document.createElement('td');
+                dateCell.textContent = formattedDate;
+                if (dateTooltip) {
+                    dateCell.style.color = 'red';
+                    dateCell.style.cursor = 'help';
+
+                    dateCell.addEventListener("mouseenter", function (event) {
+                        showTooltip(event, dateTooltip);
+                    });
+
+                    dateCell.addEventListener("mousemove", function (event) {
+                        tooltip.style.top = (event.clientY + 10) + "px";
+                        tooltip.style.left = (event.clientX + 10) + "px";
+                    });
+
+                    dateCell.addEventListener("mouseleave", hideTooltip);
                 }
-                
+
+                // Ô hình ảnh với tooltip
+                var imageCell = document.createElement('td');
                 if (image) {
                     var img = document.createElement('img');
                     img.src = image;
                     img.style.maxWidth = '100px'; 
                     img.style.maxHeight = '100px';
-                    tr.cells[3].appendChild(img); 
+                    imageCell.appendChild(img);
                 } else {
-                    tr.cells[3].innerHTML = 'No Image';
-                    tr.cells[3].style.color = 'red';
-                  }
-    
+                    imageCell.textContent = 'No Image';
+                    imageCell.style.color = 'red';
+                    imageCell.style.cursor = 'help';
+
+                    imageCell.addEventListener("mouseenter", function (event) {
+                        showTooltip(event, "Không có hình ảnh");
+                    });
+
+                    imageCell.addEventListener("mousemove", function (event) {
+                        tooltip.style.top = (event.clientY + 10) + "px";
+                        tooltip.style.left = (event.clientX + 10) + "px";
+                    });
+
+                    imageCell.addEventListener("mouseleave", hideTooltip);
+                }
+
+                // Thêm các ô vào hàng
+                tr.appendChild(titleCell);
+                tr.appendChild(bodyCell);
+                tr.appendChild(dateCell);
+                tr.appendChild(imageCell);
                 previewTableBody.appendChild(tr);
             }
-    
-            previewContainer.style.display = 'block';  // Show the preview container
-            document.getElementById('submit-button').style.display = 'inline-block';  // Show the submit button
+
+            previewContainer.style.display = 'block';
+            document.getElementById('submit-button').style.display = 'inline-block';
         };
-    
+
         reader.readAsBinaryString(file);
     });
 </script>
